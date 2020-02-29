@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Controlling Deivce</title>
+	<link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-400">
+
+<div class="container mx-auto pt-16">
+	<div class="shadow bg-white max-w-md mx-auto rounded pb-8 font-mono">
+		<div class="bg-gray-200 border-b border-gray-300 py-4 px-4 text-xs rounded-t">
+			<div class="flex justify-center">
+				<div class="w-full">
+					<label class="block text-gray-600">Subscribe Key</label>
+					<input id="subscribe_key" value="sub-c-fee6fbae-4fb6-11ea-80a4-42690e175160" class="w-full shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="channe" placeholder="Subscribe key">
+				</div>
+			</div>
+			<div class="flex justify-center mt-2">
+				<div class="w-full">
+					<label class="block text-gray-600">Publish Key</label>
+					<input id="publish_key" value="pub-c-ac3f9dde-c7c3-4c3c-8ea1-b90ca3c38521" class="w-full shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="channe" placeholder="Publish Key">
+				</div>
+			</div>
+			<div class="flex justify-center mt-2">
+				<div class="w-full">
+					<label class="block text-gray-600">Channel</label>
+					<input id="channel" class="w-full shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="channe" placeholder="Channel name" value="messages">
+				</div>
+			</div>
+		</div>
+
+		<div class="flex justify-center pt-6">
+			<div>
+				<label class="block text-gray-600 text-sm mb-2">Message</label>
+				<input id="message" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="message" placeholder="Write a message" onkeydown="((event)=> { event.key == 'Enter' ? send_message() : null; })(event);">
+			</div>
+		</div>
+		<p id="notify" class="block w-full text-center my-6 text-xs"></p>
+		<div class="flex justify-center">
+			<button class="bg-gray-800 hover:bg-gray-900 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline shadow" onclick="send_message()">Send Message</button>		
+		</div>
+
+
+	</div>
+	<p class="text-center text-gray-600 text-xs pt-4 font-mono">
+	  Read more on <a class="underline font-bold" href="https://msjaber.com">https://msjaber.com</a>
+	</p>
+</div>
+
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.27.3.js"></script>
+<script type="text/javascript">	
+
+	let send_message = function() {		
+		let subscribe_key = document.getElementById('subscribe_key').value	
+		let publish_key = document.getElementById('publish_key').value
+		let message = document.getElementById('message').value
+		let channel = document.getElementById('channel').value
+		
+		if (subscribe_key.length == 0) {
+			alert('Please fill in the subscribe key')
+			return
+		}
+
+		if (publish_key.length == 0) {
+			alert('Please fill in the publish key')
+			return
+		}
+
+		if (message.length == 0) {
+			alert('Please fill in a message')
+			return
+		}
+
+		if (channel.length == 0) {
+			alert('Please fill in the channel name')
+			return	
+		}
+
+		let pubnub = new PubNub({
+	        publishKey: publish_key,
+	        subscribeKey: subscribe_key,	
+		})
+			
+		
+		if (message.length == 0) {
+			alert('Please fill in a message')
+			return
+		}
+
+		if (channel.length == 0) {
+			alert('Please fill in the channel name')
+			return	
+		}
+
+		let payload = {
+			message: message,
+	        channel: channel
+	    }
+
+		pubnub.publish(payload).then(response => {
+			document.getElementById('notify').innerHTML = `Your message "${message}" has been sent to "${channel}". </br> ${new Date().getTime()}`
+		}).catch(error => {
+			alert(error)
+			document.getElementById('notify').innerHTML = `Something went wrong. Make sure you have valid keys`
+		})
+	}
+
+	if (window.location.search.length > 0) {
+		document.getElementById('led').style.display = 'block'
+	}
+</script>
+</body>
+</html>
